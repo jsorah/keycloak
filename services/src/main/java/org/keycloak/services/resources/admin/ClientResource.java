@@ -28,6 +28,7 @@ import org.keycloak.OAuthErrorException;
 import org.keycloak.authorization.admin.AuthorizationService;
 import org.keycloak.common.ClientConnection;
 import org.keycloak.common.Profile;
+import org.keycloak.common.util.ObjectUtil;
 import org.keycloak.common.util.Time;
 import org.keycloak.events.Errors;
 import org.keycloak.events.admin.OperationType;
@@ -39,6 +40,7 @@ import org.keycloak.models.ClientSecretConstants;
 import org.keycloak.models.Constants;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ModelDuplicateException;
+import org.keycloak.models.ModelException;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserManager;
@@ -66,6 +68,9 @@ import org.keycloak.services.clientpolicy.context.AdminClientViewContext;
 import org.keycloak.services.clientpolicy.context.ClientSecretRotationContext;
 import org.keycloak.services.clientregistration.ClientRegistrationTokenUtils;
 import org.keycloak.services.clientregistration.policy.RegistrationAuth;
+import org.keycloak.services.clienttype.ClientType;
+import org.keycloak.services.clienttype.ClientTypeException;
+import org.keycloak.services.clienttype.ClientTypeManager;
 import org.keycloak.services.managers.ClientManager;
 import org.keycloak.services.managers.RealmManager;
 import org.keycloak.services.managers.ResourceAdminManager;
@@ -89,6 +94,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -147,6 +154,17 @@ public class ClientResource {
             session.setAttribute(ClientSecretConstants.CLIENT_SECRET_ROTATION_ENABLED,Boolean.FALSE);
             session.clientPolicy().triggerOnEvent(new AdminClientUpdateContext(rep, client, auth.adminAuth()));
 
+            if (!ObjectUtil.isEqualOrBothNull(rep.getType(), client.getType())) {
+                throw new ClientTypeException("Not supported to change client type");
+            }
+            if (rep.getType() != null) {
+                // TODO:mposolda trace or remove this logging message
+                logger.infof("Updating client '%s' with client type '%s'", rep.getClientId(), rep.getType());
+                ClientTypeManager mgr = session.getProvider(ClientTypeManager.class);
+                ClientType clientType = mgr.getClientType(session, realm, rep.getType());
+                clientType.onUpdate(client, rep);
+            }
+
             updateClientFromRep(rep, client, session);
 
             ValidationUtil.validateClient(session, client, false, r -> {
@@ -169,6 +187,8 @@ public class ClientResource {
             return Response.noContent().build();
         } catch (ModelDuplicateException e) {
             throw ErrorResponse.exists("Client already exists");
+        } catch (ClientTypeException cte) {
+            throw ErrorResponse.error(cte.getMessage(), Response.Status.BAD_REQUEST);
         } catch (ClientPolicyException cpe) {
             throw new ErrorResponseException(cpe.getError(), cpe.getErrorDetail(), Response.Status.BAD_REQUEST);
         }
