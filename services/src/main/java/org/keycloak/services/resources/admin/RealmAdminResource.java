@@ -1217,4 +1217,11 @@ public class RealmAdminResource {
         ProfileHelper.requireFeature(Profile.Feature.CLIENT_POLICIES);
         return new ClientProfilesResource(session, auth);
     }
+
+    @Path("client-types")
+    public ClientTypesResource getClientTypesResource() {
+        ClientTypesResource resource = new ClientTypesResource(realm, auth);
+        ResteasyProviderFactory.getInstance().injectProperties(resource);
+        return resource;
+    }
 }
