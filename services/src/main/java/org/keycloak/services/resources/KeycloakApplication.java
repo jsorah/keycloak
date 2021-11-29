@@ -39,12 +39,10 @@ import org.keycloak.models.utils.PostMigrationEvent;
 import org.keycloak.models.utils.RepresentationToModel;
 import org.keycloak.platform.Platform;
 import org.keycloak.platform.PlatformProvider;
-import org.keycloak.representations.idm.ClientTypesRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.services.DefaultKeycloakSessionFactory;
 import org.keycloak.services.ServicesLogger;
-import org.keycloak.services.clienttype.ClientTypeManager;
 import org.keycloak.services.error.KeycloakErrorHandler;
 import org.keycloak.services.error.KcUnrecognizedPropertyExceptionHandler;
 import org.keycloak.services.filters.KeycloakSecurityHeadersFilter;
@@ -159,11 +157,6 @@ public class KeycloakApplication extends Application {
             public void run(KeycloakSession session) {
                 boolean shouldBootstrapAdmin = new ApplianceBootstrap(session).isNoMasterUser();
                 BOOTSTRAP_ADMIN_USER.set(shouldBootstrapAdmin);
-
-                // TODO:mposolda This is not good place to call this. Only testing purposes
-                ClientTypeManager mgr = session.getProvider(ClientTypeManager.class);
-                ClientTypesRepresentation clientTypes = mgr.getClientTypes(null, true);
-                logger.info("HELLO, I AM HERE");
             }
 
         });
