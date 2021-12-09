@@ -42,6 +42,7 @@ import jakarta.persistence.criteria.Root;
 
 import org.hibernate.Session;
 import org.jboss.logging.Logger;
+import org.keycloak.client.clienttype.ClientTypeManager;
 import org.keycloak.common.util.Time;
 import org.keycloak.connections.jpa.util.JpaUtils;
 import org.keycloak.migration.MigrationModel;
@@ -291,7 +292,7 @@ public class JpaRealmProvider implements RealmProvider, ClientProvider, ClientSc
           .filter(s -> s.get("client") != null))
           .collect(
             Collectors.groupingBy(
-              s -> new ClientAdapter(realm, em, session, (ClientEntity) s.get("client")),
+              s -> toClientModel(realm, (ClientEntity) s.get("client")),
               Collectors.mapping(s -> (String) s.get("redirectUri"), Collectors.toSet())
             )
           );
@@ -707,7 +708,7 @@ public class JpaRealmProvider implements RealmProvider, ClientProvider, ClientSc
         entity.setRealmId(realm.getId());
         em.persist(entity);
 
-        final ClientModel resource = new ClientAdapter(realm, em, session, entity);
+        final ClientModel resource = toClientModel(realm, entity);
 
         session.getKeycloakSessionFactory().publish((ClientModel.ClientCreationEvent) () -> resource);
         return resource;
@@ -744,9 +745,16 @@ public class JpaRealmProvider implements RealmProvider, ClientProvider, ClientSc
         ClientEntity client = em.find(ClientEntity.class, id);
         // Check if client belongs to this realm
         if (client == null || !realm.getId().equals(client.getRealmId())) return null;
-        ClientAdapter adapter = new ClientAdapter(realm, em, session, client);
+        ClientModel adapter = toClientModel(realm, client);
         return adapter;
 
+    }
+
+    private ClientModel toClientModel(RealmModel realm, ClientEntity client) {
+        ClientAdapter adapter = new ClientAdapter(realm, em, session, client);
+
+        ClientTypeManager mgr = session.getProvider(ClientTypeManager.class);
+        return mgr.augmentClient(adapter);
     }
 
     @Override

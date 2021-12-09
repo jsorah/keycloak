@@ -67,9 +67,9 @@ import org.keycloak.services.clientpolicy.context.AdminClientViewContext;
 import org.keycloak.services.clientpolicy.context.ClientSecretRotationContext;
 import org.keycloak.services.clientregistration.ClientRegistrationTokenUtils;
 import org.keycloak.services.clientregistration.policy.RegistrationAuth;
-import org.keycloak.services.clienttype.ClientType;
-import org.keycloak.services.clienttype.ClientTypeException;
-import org.keycloak.services.clienttype.ClientTypeManager;
+import org.keycloak.client.clienttype.ClientType;
+import org.keycloak.client.clienttype.ClientTypeException;
+import org.keycloak.client.clienttype.ClientTypeManager;
 import org.keycloak.services.managers.ClientManager;
 import org.keycloak.services.managers.RealmManager;
 import org.keycloak.services.managers.ResourceAdminManager;
@@ -158,7 +158,7 @@ public class ClientResource {
                 // TODO:mposolda trace or remove this logging message
                 logger.infof("Updating client '%s' with client type '%s'", rep.getClientId(), rep.getType());
                 ClientTypeManager mgr = session.getProvider(ClientTypeManager.class);
-                ClientType clientType = mgr.getClientType(session, realm, rep.getType());
+                ClientType clientType = mgr.getClientType(realm, rep.getType());
                 clientType.onUpdate(client, rep);
             }
 
