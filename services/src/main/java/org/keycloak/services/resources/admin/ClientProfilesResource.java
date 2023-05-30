@@ -17,6 +17,7 @@
 
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -60,6 +61,7 @@ public class ClientProfilesResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin")
     public ClientProfilesRepresentation getProfiles(@QueryParam("include-global-profiles") boolean includeGlobalProfiles) {
         auth.realm().requireViewRealm();
 
@@ -72,6 +74,7 @@ public class ClientProfilesResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin")
     public Response updateProfiles(final ClientProfilesRepresentation clientProfiles) {
         auth.realm().requireManageRealm();
 

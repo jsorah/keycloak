@@ -17,6 +17,8 @@
 
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import jakarta.ws.rs.NotFoundException;
 import org.keycloak.events.admin.OperationType;
@@ -91,6 +93,7 @@ public class ScopeMappedResource {
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
     @Deprecated
+    @Operation(tags="Scope Mappings", summary = "Get all scope mappings for the client", deprecated = true)
     public MappingsRepresentation getScopeMappings() {
         viewPermission.require();
 
@@ -127,6 +130,7 @@ public class ScopeMappedResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags="Scope Mappings", summary = "Get realm-level roles associated with the client's scope")
     public Stream<RoleRepresentation> getRealmScopeMappings() {
         viewPermission.require();
 
@@ -147,6 +151,7 @@ public class ScopeMappedResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags="Scope Mappings", summary = "Get realm-level roles that are available to attach to this client's scope")
     public Stream<RoleRepresentation> getAvailableRealmScopeMappings() {
         viewPermission.require();
 
@@ -175,7 +180,9 @@ public class ScopeMappedResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    public Stream<RoleRepresentation> getCompositeRealmScopeMappings(@QueryParam("briefRepresentation") @DefaultValue("true") boolean briefRepresentation) {
+    @Operation(tags="Scope Mappings", summary = "Get effective realm-level roles associated with the client’s scope What this does is recurse any composite roles associated with the client’s scope and adds the roles to this lists.",
+        description = "The method is really to show a comprehensive total view of realm-level roles associated with the client.")
+    public Stream<RoleRepresentation> getCompositeRealmScopeMappings(@Parameter(description = "if false, return roles with their attributes") @QueryParam("briefRepresentation") @DefaultValue("true") boolean briefRepresentation) {
         viewPermission.require();
 
         if (scopeContainer == null) {
@@ -197,6 +204,7 @@ public class ScopeMappedResource {
     @Path("realm")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Scope Mappings", summary = "Add a set of realm-level roles to the client's scope")
     public void addRealmScopeMappings(List<RoleRepresentation> roles) {
         managePermission.require();
 
@@ -223,6 +231,7 @@ public class ScopeMappedResource {
     @Path("realm")
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Scope Mappings", summary = "Remove a set of realm-level roles from the client's scope")
     public void deleteRealmScopeMappings(List<RoleRepresentation> roles) {
         managePermission.require();
 

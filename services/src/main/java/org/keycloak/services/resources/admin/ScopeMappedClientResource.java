@@ -17,6 +17,8 @@
 
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import jakarta.ws.rs.NotFoundException;
 import org.keycloak.events.admin.OperationType;
@@ -84,6 +86,7 @@ public class ScopeMappedClientResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags="Scope Mappings", summary = "Get the roles associated with a client's scope Returns roles for the client.")
     public Stream<RoleRepresentation> getClientScopeMappings() {
         viewPermission.require();
 
@@ -102,6 +105,7 @@ public class ScopeMappedClientResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags="Scope Mappings", summary = "The available client-level roles Returns the roles for the client that can be associated with the client's scope")
     public Stream<RoleRepresentation> getAvailableClientScopeMappings() {
         viewPermission.require();
 
@@ -124,7 +128,8 @@ public class ScopeMappedClientResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    public Stream<RoleRepresentation> getCompositeClientScopeMappings(@QueryParam("briefRepresentation") @DefaultValue("true") boolean briefRepresentation) {
+    @Operation(tags="Scope Mappings", summary = "Get effective client roles Returns the roles for the client that are associated with the client's scope.")
+    public Stream<RoleRepresentation> getCompositeClientScopeMappings(@Parameter(description = "if false, return roles with their attributes") @QueryParam("briefRepresentation") @DefaultValue("true") boolean briefRepresentation) {
         viewPermission.require();
 
         Function<RoleModel, RoleRepresentation> toBriefRepresentation = briefRepresentation ?
@@ -141,6 +146,7 @@ public class ScopeMappedClientResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Scope Mappings", summary = "Add client-level roles to the client's scope")
     public void addClientScopeMapping(List<RoleRepresentation> roles) {
         managePermission.require();
 
@@ -162,6 +168,7 @@ public class ScopeMappedClientResource {
      */
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Scope Mappings", summary = "Remove client-level roles from the client's scope.")
     public void deleteClientScopeMapping(List<RoleRepresentation> roles) {
         managePermission.require();
 

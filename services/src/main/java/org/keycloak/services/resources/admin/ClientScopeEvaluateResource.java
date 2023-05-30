@@ -24,6 +24,8 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.Path;
@@ -91,7 +93,7 @@ public class ClientScopeEvaluateResource {
      * @return
      */
     @Path("scope-mappings/{roleContainerId}")
-    public ClientScopeEvaluateScopeMappingsResource scopeMappings(@QueryParam("scope") String scopeParam, @PathParam("roleContainerId") String roleContainerId) {
+    public ClientScopeEvaluateScopeMappingsResource scopeMappings(@QueryParam("scope") String scopeParam, @Parameter(description = "either realm name OR client UUID") @PathParam("roleContainerId") String roleContainerId) {
         auth.clients().requireView(client);
 
         if (roleContainerId == null) {
@@ -117,6 +119,8 @@ public class ClientScopeEvaluateResource {
     @Path("protocol-mappers")
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = "Clients", summary = "Return list of all protocol mappers, which will be used when generating tokens issued for particular client.",
+            description = "This means protocol mappers assigned to this client directly and protocol mappers assigned to all client scopes of this client.")
     public Stream<ProtocolMapperEvaluationRepresentation> getGrantedProtocolMappers(@QueryParam("scope") String scopeParam) {
         auth.clients().requireView(client);
 
@@ -157,6 +161,7 @@ public class ClientScopeEvaluateResource {
     @Path("generate-example-userinfo")
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Create JSON with payload of example user info")
     public Map<String, Object> generateExampleUserinfo(@QueryParam("scope") String scopeParam, @QueryParam("userId") String userId) {
         auth.clients().requireView(client);
 
@@ -182,6 +187,7 @@ public class ClientScopeEvaluateResource {
     @Path("generate-example-id-token")
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Create JSON with payload of example id token")
     public IDToken generateExampleIdToken(@QueryParam("scope") String scopeParam, @QueryParam("userId") String userId) {
         auth.clients().requireView(client);
 
@@ -206,6 +212,7 @@ public class ClientScopeEvaluateResource {
     @Path("generate-example-access-token")
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Create JSON with payload of example access token")
     public AccessToken generateExampleAccessToken(@QueryParam("scope") String scopeParam, @QueryParam("userId") String userId) {
         auth.clients().requireView(client);
 

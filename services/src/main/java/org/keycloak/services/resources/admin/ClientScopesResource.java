@@ -16,6 +16,7 @@
  */
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.events.admin.OperationType;
@@ -71,6 +72,7 @@ public class ClientScopesResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags = "Client Scopes", summary = "Get client scopes belonging to the realm Returns a list of client scopes belonging to the realm")
     public Stream<ClientScopeRepresentation> getClientScopes() {
         auth.clients().requireListClientScopes();
 
@@ -90,6 +92,7 @@ public class ClientScopesResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags = "Client Scopes", summary = "Create a new client scope Client Scope’s name must be unique!")
     public Response createClientScope(ClientScopeRepresentation rep) {
         auth.clients().requireManageClientScopes();
         ClientScopeResource.validateClientScopeName(rep.getName());

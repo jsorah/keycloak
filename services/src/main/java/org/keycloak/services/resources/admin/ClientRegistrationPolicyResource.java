@@ -17,6 +17,7 @@
 
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.events.admin.ResourceType;
 import org.keycloak.models.KeycloakSession;
@@ -66,6 +67,7 @@ public class ClientRegistrationPolicyResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Client Registration Policy", summary="Base path for retrieve providers with the configProperties properly filled")
     public Stream<ComponentTypeRepresentation> getProviders() {
         return session.getKeycloakSessionFactory().getProviderFactoriesStream(ClientRegistrationPolicy.class)
                 .map((ProviderFactory factory) -> {

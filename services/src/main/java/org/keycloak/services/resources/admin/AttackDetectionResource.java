@@ -16,6 +16,7 @@
  */
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.common.ClientConnection;
@@ -77,6 +78,7 @@ public class AttackDetectionResource {
     @Path("brute-force/users/{userId}")
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = "Attack Detection", summary = "Get status of a username in brute force detection")
     public Map<String, Object> bruteForceUserStatus(@PathParam("userId") String userId) {
         UserModel user = session.users().getUserById(realm, userId);
         if (user == null) {
@@ -121,6 +123,7 @@ public class AttackDetectionResource {
      */
     @Path("brute-force/users/{userId}")
     @DELETE
+    @Operation(tags = "Attack Detection", summary="Clear any user login failures for the user This can release temporary disabled user")
     public void clearBruteForceForUser(@PathParam("userId") String userId) {
         UserModel user = session.users().getUserById(realm, userId);
         if (user == null) {
@@ -143,6 +146,7 @@ public class AttackDetectionResource {
      */
     @Path("brute-force/users")
     @DELETE
+    @Operation(tags="Attack Detection", summary = "Clear any user login failures for all users This can release temporary disabled users")
     public void clearAllBruteForce() {
         auth.users().requireManage();
 

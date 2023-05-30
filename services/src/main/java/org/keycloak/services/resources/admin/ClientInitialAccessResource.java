@@ -17,6 +17,7 @@
 
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.keycloak.http.HttpResponse;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
@@ -69,6 +70,7 @@ public class ClientInitialAccessResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Client Initial Access", summary = "Create a new initial access token.")
     public ClientInitialAccessPresentation create(ClientInitialAccessCreatePresentation config) {
         auth.clients().requireManage();
 
@@ -94,6 +96,7 @@ public class ClientInitialAccessResource {
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Client Initial Access")
     public Stream<ClientInitialAccessPresentation> list() {
         auth.clients().requireView();
 
@@ -102,6 +105,7 @@ public class ClientInitialAccessResource {
 
     @DELETE
     @Path("{id}")
+    @Operation(tags="Client Initial Access")
     public void delete(final @PathParam("id") String id) {
         auth.clients().requireManage();
 

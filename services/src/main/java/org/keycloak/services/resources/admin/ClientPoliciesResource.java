@@ -17,6 +17,7 @@
 
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -59,6 +60,7 @@ public class ClientPoliciesResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin")
     public ClientPoliciesRepresentation getPolicies() {
         auth.realm().requireViewRealm();
 
@@ -71,6 +73,7 @@ public class ClientPoliciesResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin")
     public Response updatePolicies(final ClientPoliciesRepresentation clientPolicies) {
         auth.realm().requireManageRealm();
 

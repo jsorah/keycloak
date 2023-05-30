@@ -17,6 +17,7 @@
 
 package org.keycloak.services.resources.admin.info;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.broker.provider.IdentityProvider;
 import org.keycloak.broker.provider.IdentityProviderFactory;
@@ -92,6 +93,7 @@ public class ServerInfoAdminResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Root")
     public ServerInfoRepresentation getInfo() {
         ServerInfoRepresentation info = new ServerInfoRepresentation();
         info.setSystemInfo(SystemInfoRepresentation.create(session.getKeycloakSessionFactory().getServerStartupTimestamp()));

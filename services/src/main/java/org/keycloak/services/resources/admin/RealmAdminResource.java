@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -153,6 +155,7 @@ public class RealmAdminResource {
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
     @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin", summary = "Base path for importing clients under this realm.")
     public ClientRepresentation convertClientDescription(String description) {
         auth.clients().requireManage();
 
@@ -226,6 +229,7 @@ public class RealmAdminResource {
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
     @Path("default-default-client-scopes")
+    @Operation(tags="Realms Admin", summary = "Get realm default client scopes.  Only name and ids are returned.")
     public Stream<ClientScopeRepresentation> getDefaultDefaultClientScopes() {
         return getDefaultClientScopes(true);
     }
@@ -246,6 +250,7 @@ public class RealmAdminResource {
     @PUT
     @NoCache
     @Path("default-default-client-scopes/{clientScopeId}")
+    @Operation(tags="Realms Admin")
     public void addDefaultDefaultClientScope(@PathParam("clientScopeId") String clientScopeId) {
         addDefaultClientScope(clientScopeId,true);
     }
@@ -266,6 +271,7 @@ public class RealmAdminResource {
     @DELETE
     @NoCache
     @Path("default-default-client-scopes/{clientScopeId}")
+    @Operation(tags="Realms Admin")
     public void removeDefaultDefaultClientScope(@PathParam("clientScopeId") String clientScopeId) {
         auth.clients().requireManageClientScopes();
 
@@ -288,6 +294,7 @@ public class RealmAdminResource {
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
     @Path("default-optional-client-scopes")
+    @Operation(tags="Realms Admin", summary = "Get realm optional client scopes.  Only name and ids are returned.")
     public Stream<ClientScopeRepresentation> getDefaultOptionalClientScopes() {
         return getDefaultClientScopes(false);
     }
@@ -295,6 +302,7 @@ public class RealmAdminResource {
     @PUT
     @NoCache
     @Path("default-optional-client-scopes/{clientScopeId}")
+    @Operation(tags="Realms Admin")
     public void addDefaultOptionalClientScope(@PathParam("clientScopeId") String clientScopeId) {
         addDefaultClientScope(clientScopeId, false);
     }
@@ -302,6 +310,7 @@ public class RealmAdminResource {
     @DELETE
     @NoCache
     @Path("default-optional-client-scopes/{clientScopeId}")
+    @Operation(tags="Realms Admin")
     public void removeDefaultOptionalClientScope(@PathParam("clientScopeId") String clientScopeId) {
         removeDefaultDefaultClientScope(clientScopeId);
     }
@@ -351,6 +360,7 @@ public class RealmAdminResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin", summary = "Get the top-level representation of the realm It will not include nested information like User and Client representations.")
     public RealmRepresentation getRealm() {
         if (auth.realm().canViewRealm()) {
             return ModelToRepresentation.toRepresentation(session, realm, false);
@@ -385,6 +395,8 @@ public class RealmAdminResource {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin", summary = "Update the top-level information of the realm Any user, roles or client information in the representation will be ignored.",
+            description = "This will only update top-level attributes of the realm.")
     public Response updateRealm(final RealmRepresentation rep) {
         auth.realm().requireManageRealm();
 
@@ -448,6 +460,7 @@ public class RealmAdminResource {
      *
      */
     @DELETE
+    @Operation(tags="Realms Admin", summary = "Delete the realm")
     public void deleteRealm() {
         auth.realm().requireManageRealm();
 
@@ -476,6 +489,7 @@ public class RealmAdminResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("users-management-permissions")
+    @Operation(tags="Realms Admin")
     public ManagementPermissionReference getUserMgmtPermissions() {
         auth.realm().requireViewRealm();
 
@@ -493,6 +507,7 @@ public class RealmAdminResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @NoCache
     @Path("users-management-permissions")
+    @Operation(tags="Realms Admin")
     public ManagementPermissionReference setUsersManagementPermissionsEnabled(ManagementPermissionReference ref) {
         auth.realm().requireManageRealm();
 
@@ -552,6 +567,7 @@ public class RealmAdminResource {
     @Path("push-revocation")
     @Produces(MediaType.APPLICATION_JSON)
     @POST
+    @Operation(tags="Realms Admin", summary = "Push the realm's revocation policy to any client that has an admin url associated with it.")
     public GlobalRequestResult pushRevocation() {
         auth.realm().requireManageRealm();
 
@@ -568,6 +584,7 @@ public class RealmAdminResource {
     @Path("logout-all")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin", summary = "Removes all user sessions.", description = "Any client that has an admin url will also be told to invalidate any sessions they have.")
     public GlobalRequestResult logoutAll() {
         auth.users().requireManage();
 
@@ -585,6 +602,7 @@ public class RealmAdminResource {
      */
     @Path("sessions/{session}")
     @DELETE
+    @Operation(tags="Realms Admin", summary = "Remove a specific user session.", description = "Any client that has an admin url will also be told to invalidate this particular session.")
     public void deleteSession(@PathParam("session") String sessionId) {
         auth.users().requireManage();
 
@@ -607,6 +625,8 @@ public class RealmAdminResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin", summary = "Get client session stats Returns a JSON map.",
+        description = "The key is the client id, the value is the number of sessions that currently are active with that client. Only clients that actually have a session associated with them will be in this map.")
     public Stream<Map<String, String>> getClientSessionStats() {
         auth.realm().requireViewRealm();
 
@@ -657,6 +677,7 @@ public class RealmAdminResource {
     @NoCache
     @Path("events/config")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin", summary = "Get the events provider configuration Returns JSON object with events provider configuration")
     public RealmEventsConfigRepresentation getRealmEventsConfig() {
         auth.realm().requireViewEvents();
 
@@ -681,6 +702,7 @@ public class RealmAdminResource {
     @PUT
     @Path("events/config")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin", description = "Update the events provider Change the events provider and/or its configuration")
     public void updateRealmEventsConfig(final RealmEventsConfigRepresentation rep) {
         auth.realm().requireManageEvents();
 
@@ -712,10 +734,15 @@ public class RealmAdminResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    public Stream<EventRepresentation> getEvents(@QueryParam("type") List<String> types, @QueryParam("client") String client,
-                                               @QueryParam("user") String user, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo,
-                                               @QueryParam("ipAddress") String ipAddress, @QueryParam("first") Integer firstResult,
-                                               @QueryParam("max") Integer maxResults) {
+    @Operation(tags="Realms Admin", summary = "Get events Returns all events, or filters them based on URL query parameters listed here")
+    public Stream<EventRepresentation> getEvents(@Parameter(description = "The types of events to return") @QueryParam("type") List<String> types,
+                                                 @Parameter(description = "App or oauth client name") @QueryParam("client") String client,
+                                                 @Parameter(description = "User id") @QueryParam("user") String user,
+                                                 @Parameter(description = "From date") @QueryParam("dateFrom") String dateFrom,
+                                                 @Parameter(description = "To date") @QueryParam("dateTo") String dateTo,
+                                                 @Parameter(description = "IP Address") @QueryParam("ipAddress") String ipAddress,
+                                                 @Parameter(description = "Paging offset") @QueryParam("first") Integer firstResult,
+                                                 @Parameter(description = "Maximum results size (defaults to 100)") @QueryParam("max") Integer maxResults) {
         auth.realm().requireViewEvents();
 
         EventStoreProvider eventStore = session.getProvider(EventStoreProvider.class);
@@ -795,11 +822,12 @@ public class RealmAdminResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin", summary = "Get admin events Returns all admin events, or filters events based on URL query parameters listed here")
     public Stream<AdminEventRepresentation> getEvents(@QueryParam("operationTypes") List<String> operationTypes, @QueryParam("authRealm") String authRealm, @QueryParam("authClient") String authClient,
-                                                    @QueryParam("authUser") String authUser, @QueryParam("authIpAddress") String authIpAddress,
+                                                    @Parameter(description = "user id") @QueryParam("authUser") String authUser, @QueryParam("authIpAddress") String authIpAddress,
                                                     @QueryParam("resourcePath") String resourcePath, @QueryParam("dateFrom") String dateFrom,
                                                     @QueryParam("dateTo") String dateTo, @QueryParam("first") Integer firstResult,
-                                                    @QueryParam("max") Integer maxResults,
+                                                    @Parameter(description = "Maximum results size (defaults to 100)") @QueryParam("max") Integer maxResults,
                                                     @QueryParam("resourceTypes") List<String> resourceTypes) {
         auth.realm().requireViewEvents();
 
@@ -884,6 +912,7 @@ public class RealmAdminResource {
      */
     @Path("events")
     @DELETE
+    @Operation(tags="Realms Admin", summary = "Delete all events")
     public void clearEvents() {
         auth.realm().requireManageEvents();
 
@@ -897,6 +926,7 @@ public class RealmAdminResource {
      */
     @Path("admin-events")
     @DELETE
+    @Operation(tags="Realms Admin", summary = "Delete all admin events")
     public void clearAdminEvents() {
         auth.realm().requireManageEvents();
 
@@ -916,7 +946,8 @@ public class RealmAdminResource {
     @NoCache
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Deprecated
-    public Response testSMTPConnection(final @FormParam("config") String config) throws Exception {
+    @Operation(tags="Realms Admin", summary = "Test SMTP connection with current logged in user")
+    public Response testSMTPConnection(final @Parameter(description = "SMTP server configuration") @FormParam("config") String config) throws Exception {
         Map<String, String> settings = readValue(config, new TypeReference<Map<String, String>>() {
         });
         return testSMTPConnection(settings);
@@ -926,6 +957,7 @@ public class RealmAdminResource {
     @POST
     @NoCache
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin")
     public Response testSMTPConnection(Map<String, String> settings) throws Exception {
         try {
             UserModel user = auth.adminAuth().getUser();
@@ -959,6 +991,7 @@ public class RealmAdminResource {
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
     @Path("default-groups")
+    @Operation(tags="Realms Admin", summary = "Get group hierarchy.  Only name and ids are returned.")
     public Stream<GroupRepresentation> getDefaultGroups() {
         auth.realm().requireViewRealm();
 
@@ -967,6 +1000,7 @@ public class RealmAdminResource {
     @PUT
     @NoCache
     @Path("default-groups/{groupId}")
+    @Operation(tags="Realms Admin")
     public void addDefaultGroup(@PathParam("groupId") String groupId) {
         auth.realm().requireManageRealm();
 
@@ -982,6 +1016,7 @@ public class RealmAdminResource {
     @DELETE
     @NoCache
     @Path("default-groups/{groupId}")
+    @Operation(tags="Realms Admin")
     public void removeDefaultGroup(@PathParam("groupId") String groupId) {
         auth.realm().requireManageRealm();
 
@@ -1005,6 +1040,7 @@ public class RealmAdminResource {
     @Path("group-by-path/{path: .*}")
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin")
     public GroupRepresentation getGroupByPath(@PathParam("path") String path) {
         GroupModel found = KeycloakModelUtils.findGroupByPath(realm, path);
         if (found == null) {
@@ -1023,6 +1059,7 @@ public class RealmAdminResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin", summary = "Partial import from a JSON file to an existing realm.")
     public Response partialImport(InputStream requestBody) {
         auth.realm().requireManageRealm();
         try {
@@ -1079,6 +1116,7 @@ public class RealmAdminResource {
     @Path("partial-export")
     @Produces(MediaType.APPLICATION_JSON)
     @POST
+    @Operation(tags="Realms Admin", summary = "Partial export of existing realm into a JSON file.")
     public Response partialExport(@QueryParam("exportGroupsAndRoles") Boolean exportGroupsAndRoles,
                                                      @QueryParam("exportClients") Boolean exportClients) {
         auth.realm().requireViewRealm();
@@ -1124,6 +1162,7 @@ public class RealmAdminResource {
     @Path("credential-registrators")
     @NoCache
     @Produces(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin")
     public Stream<String> getCredentialRegistrators(){
         auth.realm().requireViewRealm();
         return session.getContext().getRealm().getRequiredActionProvidersStream()

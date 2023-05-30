@@ -16,6 +16,7 @@
  */
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import jakarta.ws.rs.NotFoundException;
 import org.keycloak.common.util.ObjectUtil;
@@ -74,6 +75,7 @@ public class GroupsResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Groups", summary = "Get group hierarchy.  Only name and ids are returned.")
     public Stream<GroupRepresentation> getGroups(@QueryParam("search") String search,
                                                  @QueryParam("q") String searchQuery,
                                                  @QueryParam("exact") @DefaultValue("false") Boolean exact,
@@ -119,6 +121,7 @@ public class GroupsResource {
     @NoCache
     @Path("count")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Groups", summary = "Returns the groups counts.")
     public Map<String, Long> getGroupCount(@QueryParam("search") String search,
                                            @QueryParam("top") @DefaultValue("false") boolean onlyTopGroups) {
         Long results;
@@ -140,6 +143,8 @@ public class GroupsResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Groups", summary = "create or add a top level realm groupSet or create child.",
+        description = "This will update the group and set the parent if it exists. Create it and set the parent if the group doesn’t exist.")
     public Response addTopLevelGroup(GroupRepresentation rep) {
         auth.groups().requireManage();
 

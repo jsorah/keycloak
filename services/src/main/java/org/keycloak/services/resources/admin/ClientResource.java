@@ -16,6 +16,8 @@
  */
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.ws.rs.core.Response.Status;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
@@ -132,6 +134,7 @@ public class ClientResource {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Update the client")
     public Response update(final ClientRepresentation rep) {
         auth.clients().requireConfigure(client);
 
@@ -174,6 +177,7 @@ public class ClientResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Get representation of the client")
     public ClientRepresentation getClient() {
         try {
             session.clientPolicy().triggerOnEvent(new AdminClientViewContext(client, auth.adminAuth()));
@@ -204,6 +208,7 @@ public class ClientResource {
     @GET
     @NoCache
     @Path("installation/providers/{providerId}")
+    @Operation(tags="Clients")
     public Response getInstallationProvider(@PathParam("providerId") String providerId) {
         auth.clients().requireView(client);
 
@@ -218,6 +223,7 @@ public class ClientResource {
      */
     @DELETE
     @NoCache
+    @Operation(tags="Clients", summary = "Delete the client")
     public void deleteClient() {
         auth.clients().requireManage(client);
 
@@ -250,6 +256,7 @@ public class ClientResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Generate a new secret for the client")
     public CredentialRepresentation regenerateSecret() {
         try{
             auth.clients().requireConfigure(client);
@@ -293,6 +300,7 @@ public class ClientResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Generate a new registration access token for the client")
     public ClientRepresentation regenerateRegistrationAccessToken() {
         auth.clients().requireManage(client);
 
@@ -314,6 +322,7 @@ public class ClientResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Get the client secret")
     public CredentialRepresentation getClientSecret() {
         auth.clients().requireView(client);
 
@@ -350,6 +359,7 @@ public class ClientResource {
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
     @Path("default-client-scopes")
+    @Operation(tags="Clients", summary = "Get default client scopes.  Only name and ids are returned.")
     public Stream<ClientScopeRepresentation> getDefaultClientScopes() {
         return getDefaultClientScopes(true);
     }
@@ -364,6 +374,7 @@ public class ClientResource {
     @PUT
     @NoCache
     @Path("default-client-scopes/{clientScopeId}")
+    @Operation(tags="Clients")
     public void addDefaultClientScope(@PathParam("clientScopeId") String clientScopeId) {
         addDefaultClientScope(clientScopeId,true);
     }
@@ -387,6 +398,7 @@ public class ClientResource {
     @DELETE
     @NoCache
     @Path("default-client-scopes/{clientScopeId}")
+    @Operation(tags="Clients")
     public void removeDefaultClientScope(@PathParam("clientScopeId") String clientScopeId) {
         auth.clients().requireManage(client);
 
@@ -409,6 +421,7 @@ public class ClientResource {
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
     @Path("optional-client-scopes")
+    @Operation(tags="Clients", summary = "Get optional client scopes.  Only name and ids are returned.")
     public Stream<ClientScopeRepresentation> getOptionalClientScopes() {
         return getDefaultClientScopes(false);
     }
@@ -416,6 +429,7 @@ public class ClientResource {
     @PUT
     @NoCache
     @Path("optional-client-scopes/{clientScopeId}")
+    @Operation(tags="Clients")
     public void addOptionalClientScope(@PathParam("clientScopeId") String clientScopeId) {
         addDefaultClientScope(clientScopeId, false);
     }
@@ -423,6 +437,7 @@ public class ClientResource {
     @DELETE
     @NoCache
     @Path("optional-client-scopes/{clientScopeId}")
+    @Operation(tags="Clients")
     public void removeOptionalClientScope(@PathParam("clientScopeId") String clientScopeId) {
         removeDefaultClientScope(clientScopeId);
     }
@@ -441,6 +456,7 @@ public class ClientResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Get a user dedicated to the service account")
     public UserRepresentation getServiceAccountUser() {
         auth.clients().requireView(client);
 
@@ -465,6 +481,7 @@ public class ClientResource {
     @Path("push-revocation")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Push the client's revocation policy to its admin URL If the client has an admin URL, push revocation policy to it.")
     public GlobalRequestResult pushRevocation() {
         auth.clients().requireConfigure(client);
 
@@ -488,6 +505,7 @@ public class ClientResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Get application session count Returns a number of user sessions associated with this client { \"count\": number }")
     public Map<String, Long> getApplicationSessionCount() {
         auth.clients().requireView(client);
 
@@ -509,7 +527,8 @@ public class ClientResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    public Stream<UserSessionRepresentation> getUserSessions(@QueryParam("first") Integer firstResult, @QueryParam("max") Integer maxResults) {
+    @Operation(tags="Clients", summary = "Get user sessions for client Returns a list of user sessions associated with this client\n")
+    public Stream<UserSessionRepresentation> getUserSessions(@Parameter(description = "Paging offset") @QueryParam("first") Integer firstResult, @Parameter(description = "Maximum results size (defaults to 100)") @QueryParam("max") Integer maxResults) {
         auth.clients().requireView(client);
 
         firstResult = firstResult != null ? firstResult : -1;
@@ -533,6 +552,7 @@ public class ClientResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Get application offline session count Returns a number of offline user sessions associated with this client { \"count\": number }")
     public Map<String, Long> getOfflineSessionCount() {
         auth.clients().requireView(client);
 
@@ -554,7 +574,8 @@ public class ClientResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    public Stream<UserSessionRepresentation> getOfflineUserSessions(@QueryParam("first") Integer firstResult, @QueryParam("max") Integer maxResults) {
+    @Operation(tags="Clients", summary = "Get offline sessions for client Returns a list of offline user sessions associated with this client")
+    public Stream<UserSessionRepresentation> getOfflineUserSessions(@Parameter(description = "Paging offset") @QueryParam("first") Integer firstResult, @Parameter(description = "Maximum results size (defaults to 100)") @QueryParam("max") Integer maxResults) {
         auth.clients().requireView(client);
 
         firstResult = firstResult != null ? firstResult : -1;
@@ -575,6 +596,7 @@ public class ClientResource {
     @Path("nodes")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Register a cluster node with the client Manually register cluster node to this client - usually it’s not needed to call this directly as adapter should handle by sending registration request to Keycloak")
     public void registerNode(Map<String, String> formParams) {
         auth.clients().requireConfigure(client);
 
@@ -598,6 +620,7 @@ public class ClientResource {
     @Path("nodes/{node}")
     @DELETE
     @NoCache
+    @Operation(tags="Clients", summary = "Unregister a cluster node from the client")
     public void unregisterNode(final @PathParam("node") String node) {
         auth.clients().requireConfigure(client);
 
@@ -622,6 +645,7 @@ public class ClientResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Test if registered cluster nodes are available Tests availability by sending 'ping' request to all cluster nodes.")
     public GlobalRequestResult testNodesAvailable() {
         auth.clients().requireConfigure(client);
 
@@ -647,6 +671,7 @@ public class ClientResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags="Clients", summary = "Return object stating whether client Authorization permissions have been initialized or not and a reference")
     public ManagementPermissionReference getManagementPermissions() {
         auth.roles().requireView(client);
 
@@ -677,6 +702,7 @@ public class ClientResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags="Clients", summary = "Return object stating whether client Authorization permissions have been initialized or not and a reference")
     public ManagementPermissionReference setManagementPermissionsEnabled(ManagementPermissionReference ref) {
         auth.clients().requireManage(client);
         AdminPermissionManagement permissions = AdminPermissions.management(session, realm);
@@ -697,6 +723,7 @@ public class ClientResource {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Invalidate the rotated secret for the client")
     public Response invalidateRotatedSecret() {
         try{
             auth.clients().requireConfigure(client);
@@ -729,6 +756,7 @@ public class ClientResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Clients", summary = "Get the rotated client secret")
     public CredentialRepresentation getClientRotatedSecret() {
         auth.clients().requireView(client);
 

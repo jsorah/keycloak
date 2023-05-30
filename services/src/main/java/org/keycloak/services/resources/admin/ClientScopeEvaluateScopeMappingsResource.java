@@ -22,6 +22,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -68,6 +69,8 @@ public class ClientScopeEvaluateScopeMappingsResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags="Clients", summary = "Get effective scope mapping of all roles of particular role container, which this client is defacto allowed to have in the accessToken issued for him.",
+            description = "This contains scope mappings, which this client has directly, as well as scope mappings, which are granted to all client scopes, which are linked with this client.")
     public Stream<RoleRepresentation> getGrantedScopeMappings() {
         return getGrantedRoles().map(ModelToRepresentation::toBriefRepresentation);
     }
@@ -83,6 +86,7 @@ public class ClientScopeEvaluateScopeMappingsResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags="Clients", summary = "Get roles, which this client doesn't have scope for and can't have them in the accessToken issued for him.", description = "Defacto all the other roles of particular role container, which are not in {@link #getGrantedScopeMappings()}")
     public Stream<RoleRepresentation> getNotGrantedScopeMappings() {
         Set<RoleModel> grantedRoles = getGrantedRoles().collect(Collectors.toSet());
 

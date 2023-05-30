@@ -16,6 +16,7 @@
  */
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.common.Profile;
@@ -99,6 +100,7 @@ public class ClientScopeResource {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags = "Client Scopes", summary = "Update the client scope")
     public Response update(final ClientScopeRepresentation rep) {
         auth.clients().requireManageClientScopes();
         validateDynamicScopeUpdate(rep);
@@ -124,6 +126,7 @@ public class ClientScopeResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags = "Client Scopes", summary = "Get representation of the client scope")
     public ClientScopeRepresentation getClientScope() {
         auth.clients().requireView(clientScope);
 
@@ -136,6 +139,7 @@ public class ClientScopeResource {
      */
     @DELETE
     @NoCache
+    @Operation(tags = "Client Scopes", summary = "Delete the client scope")
     public Response deleteClientScope() {
         auth.clients().requireManage(clientScope);
 

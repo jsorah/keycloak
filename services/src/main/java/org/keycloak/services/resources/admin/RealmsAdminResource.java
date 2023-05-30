@@ -16,6 +16,8 @@
  */
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.common.ClientConnection;
@@ -98,6 +100,7 @@ public class RealmsAdminResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin", summary = "Get accessible realms Returns a list of accessible realms. The list is filtered based on what realms the caller is allowed to view.")
     public Stream<RealmRepresentation> getRealms(@DefaultValue("false") @QueryParam("briefRepresentation") boolean briefRepresentation) {
         Stream<RealmRepresentation> realms = session.realms().getRealmsStream()
                 .map(realm -> toRealmRep(realm, briefRepresentation))
@@ -124,6 +127,7 @@ public class RealmsAdminResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Realms Admin", summary = "Import a realm. Imports a realm from a full representation of that realm.", description = "Realm name must be unique.")
     public Response importRealm(InputStream requestBody) {
         AdminPermissions.realms(session, auth).requireCreateRealm();
 
@@ -177,7 +181,7 @@ public class RealmsAdminResource {
      * @return
      */
     @Path("{realm}")
-    public RealmAdminResource getRealmAdmin(@PathParam("realm") final String name) {
+    public RealmAdminResource getRealmAdmin(@PathParam("realm") @Parameter(description = "realm name (not id!)") final String name) {
         RealmManager realmManager = new RealmManager(session);
         RealmModel realm = realmManager.getRealmByName(name);
         if (realm == null) throw new NotFoundException("Realm not found.");

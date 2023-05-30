@@ -16,6 +16,7 @@
  */
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
@@ -48,6 +49,7 @@ public class UserProfileResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Users")
     public String getConfiguration() {
         auth.requireAnyAdminRole();
         return session.getProvider(UserProfileProvider.class).getConfiguration();
@@ -55,6 +57,7 @@ public class UserProfileResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Users")
     public Response update(String text) {
         auth.realm().requireManageRealm();
         UserProfileProvider t = session.getProvider(UserProfileProvider.class);

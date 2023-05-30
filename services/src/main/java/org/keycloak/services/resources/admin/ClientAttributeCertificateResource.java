@@ -17,6 +17,8 @@
 
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import jakarta.ws.rs.NotAcceptableException;
 import jakarta.ws.rs.NotFoundException;
@@ -99,6 +101,7 @@ public class ClientAttributeCertificateResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Client Attribute Certificate", summary = "Get key info")
     public CertificateRepresentation getKeyInfo() {
         auth.clients().requireView(client);
 
@@ -115,6 +118,7 @@ public class ClientAttributeCertificateResource {
     @NoCache
     @Path("generate")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Client Attribute Certificate", summary = "Generate a new certificate with new key pair")
     public CertificateRepresentation generate() {
         auth.clients().requireConfigure(client);
 
@@ -138,6 +142,7 @@ public class ClientAttributeCertificateResource {
     @Path("upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Client Attribute Certificate", summary = "Upload certificate and eventually private key")
     public CertificateRepresentation uploadJks() throws IOException {
         auth.clients().requireConfigure(client);
 
@@ -163,6 +168,7 @@ public class ClientAttributeCertificateResource {
     @Path("upload-certificate")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Client Attribute Certificate", summary = "Upload only certificate, not private key")
     public CertificateRepresentation uploadJksCertificate() throws IOException {
         auth.clients().requireConfigure(client);
 
@@ -265,7 +271,8 @@ public class ClientAttributeCertificateResource {
     @Path("/download")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Consumes(MediaType.APPLICATION_JSON)
-    public byte[] getKeystore(final KeyStoreConfig config) {
+    @Operation(tags="Client Attribute Certificate", summary = "Get a keystore file for the client, containing private key and public certificate")
+    public byte[] getKeystore(@Parameter(description = "Keystore configuration as JSON") final KeyStoreConfig config) {
         auth.clients().requireView(client);
 
         checkKeystoreFormat(config);
@@ -302,7 +309,12 @@ public class ClientAttributeCertificateResource {
     @Path("/generate-and-download")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Consumes(MediaType.APPLICATION_JSON)
-    public byte[] generateAndGetKeystore(final KeyStoreConfig config) {
+    @Operation(tags = "Client Attribute Certificate", summary =
+            "Generate a new keypair and certificate, and get the private key file\n" +
+                    "\n" +
+                    "Generates a keypair and certificate and serves the private key in a specified keystore format.\n" +
+                    "Only generated public certificate is saved in Keycloak DB - the private key is not.")
+    public byte[] generateAndGetKeystore(@Parameter(description = "Keystore configuration as JSON") final KeyStoreConfig config) {
         auth.clients().requireConfigure(client);
 
         checkKeystoreFormat(config);

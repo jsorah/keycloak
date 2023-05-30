@@ -16,6 +16,8 @@
  */
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import jakarta.ws.rs.NotFoundException;
 import org.keycloak.common.util.ObjectUtil;
@@ -82,6 +84,7 @@ public class GroupResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Groups")
     public GroupRepresentation getGroup() {
         this.auth.groups().requireView(group);
 
@@ -99,6 +102,7 @@ public class GroupResource {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Groups", summary = "Update group, ignores subgroups.")
     public Response updateGroup(GroupRepresentation rep) {
         this.auth.groups().requireManage(group);
 
@@ -130,6 +134,7 @@ public class GroupResource {
     }
 
     @DELETE
+    @Operation(tags="Groups")
     public void deleteGroup() {
         this.auth.groups().requireManage(group);
 
@@ -149,6 +154,7 @@ public class GroupResource {
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Groups", summary = "Set or create child.", description = "This will just set the parent if it exists. Create it and set the parent if the group doesn’t exist.")
     public Response addChild(GroupRepresentation rep) {
         this.auth.groups().requireManage(group);
 
@@ -265,9 +271,11 @@ public class GroupResource {
     @NoCache
     @Path("members")
     @Produces(MediaType.APPLICATION_JSON)
-    public Stream<UserRepresentation> getMembers(@QueryParam("first") Integer firstResult,
-                                               @QueryParam("max") Integer maxResults,
-                                               @QueryParam("briefRepresentation") Boolean briefRepresentation) {
+    @Operation(tags="Groups", summary = "Get users Returns a stream of users, filtered according to query parameters")
+    public Stream<UserRepresentation> getMembers(@Parameter(description = "Pagination offset") @QueryParam("first") Integer firstResult,
+                                                 @Parameter(description = "Maximum results size (defaults to 100)") @QueryParam("max") Integer maxResults,
+                                                 @Parameter(description = "Only return basic information (only guaranteed to return id, username, created, first and last name, email, enabled state, email verification state, federation link, and access. Note that it means that namely user attributes, required actions, and not before are not returned.)")
+                                                     @QueryParam("briefRepresentation") Boolean briefRepresentation) {
         this.auth.groups().requireViewMembers(group);
         
         firstResult = firstResult != null ? firstResult : 0;
@@ -289,6 +297,7 @@ public class GroupResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags="Groups", summary = "Return object stating whether client Authorization permissions have been initialized or not and a reference")
     public ManagementPermissionReference getManagementPermissions() {
         auth.groups().requireView(group);
 
@@ -319,6 +328,7 @@ public class GroupResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @NoCache
+    @Operation(tags="Groups", summary = "Return object stating whether client Authorization permissions have been initialized or not and a reference")
     public ManagementPermissionReference setManagementPermissionsEnabled(ManagementPermissionReference ref) {
         auth.groups().requireManage(group);
         AdminPermissionManagement permissions = AdminPermissions.management(session, realm);

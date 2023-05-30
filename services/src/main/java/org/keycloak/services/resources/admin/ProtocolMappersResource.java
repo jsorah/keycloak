@@ -18,6 +18,8 @@ package org.keycloak.services.resources.admin;
 
 import static org.keycloak.protocol.ProtocolMapperUtils.isEnabled;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import jakarta.ws.rs.NotFoundException;
@@ -99,6 +101,7 @@ public class ProtocolMappersResource {
     @NoCache
     @Path("protocol/{protocol}")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Protocol Mappers", summary = "Get mappers by name for a specific protocol")
     public Stream<ProtocolMapperRepresentation> getMappersPerProtocol(@PathParam("protocol") String protocol) {
         viewPermission.require();
 
@@ -116,6 +119,7 @@ public class ProtocolMappersResource {
     @POST
     @NoCache
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Protocol Mappers", summary = "Create a mapper")
     public Response createMapper(ProtocolMapperRepresentation rep) {
         managePermission.require();
 
@@ -140,6 +144,7 @@ public class ProtocolMappersResource {
     @POST
     @NoCache
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Protocol Mappers", summary = "Create multiple mappers")
     public void createMapper(List<ProtocolMapperRepresentation> reps) {
         managePermission.require();
 
@@ -161,6 +166,7 @@ public class ProtocolMappersResource {
     @NoCache
     @Path("models")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Protocol Mappers", summary = "Get mappers")
     public Stream<ProtocolMapperRepresentation> getMappers() {
         viewPermission.require();
 
@@ -179,7 +185,8 @@ public class ProtocolMappersResource {
     @NoCache
     @Path("models/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ProtocolMapperRepresentation getMapperById(@PathParam("id") String id) {
+    @Operation(tags="Protocol Mappers", summary = "Get mapper by id")
+    public ProtocolMapperRepresentation getMapperById(@Parameter(description = "Mapper id") @PathParam("id") String id) {
         viewPermission.require();
 
         ProtocolMapperModel model = client.getProtocolMapperById(id);
@@ -197,7 +204,8 @@ public class ProtocolMappersResource {
     @NoCache
     @Path("models/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void update(@PathParam("id") String id, ProtocolMapperRepresentation rep) {
+    @Operation(tags="Protocol Mappers", summary = "Update the mapper")
+    public void update(@Parameter(description = "Mapper id") @PathParam("id") String id, ProtocolMapperRepresentation rep) {
         managePermission.require();
 
         ProtocolMapperModel model = client.getProtocolMapperById(id);
@@ -218,7 +226,8 @@ public class ProtocolMappersResource {
     @DELETE
     @NoCache
     @Path("models/{id}")
-    public void delete(@PathParam("id") String id) {
+    @Operation(tags="Protocol Mappers", summary = "Delete the mapper")
+    public void delete(@Parameter(description = "Mapper id") @PathParam("id") String id) {
         managePermission.require();
 
         ProtocolMapperModel model = client.getProtocolMapperById(id);

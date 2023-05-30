@@ -17,6 +17,7 @@
 
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.common.util.PemUtils;
 import org.keycloak.crypto.KeyWrapper;
@@ -51,6 +52,7 @@ public class KeyResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(tags="Key")
     public KeysMetadataRepresentation getKeyMetadata() {
         auth.realm().requireViewRealm();
 

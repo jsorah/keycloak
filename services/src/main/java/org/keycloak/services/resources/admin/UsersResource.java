@@ -16,6 +16,8 @@
  */
 package org.keycloak.services.resources.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.common.ClientConnection;
@@ -110,6 +112,7 @@ public class UsersResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(tags="Users", summary = "Create a new user Username must be unique.")
     public Response createUser(final UserRepresentation rep) {
         // first check if user has manage rights
         try {
@@ -252,20 +255,22 @@ public class UsersResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    public Stream<UserRepresentation> getUsers(@QueryParam("search") String search,
-                                               @QueryParam("lastName") String last,
-                                               @QueryParam("firstName") String first,
-                                               @QueryParam("email") String email,
-                                               @QueryParam("username") String username,
-                                               @QueryParam("emailVerified") Boolean emailVerified,
-                                               @QueryParam("idpAlias") String idpAlias,
-                                               @QueryParam("idpUserId") String idpUserId,
-                                               @QueryParam("first") Integer firstResult,
-                                               @QueryParam("max") Integer maxResults,
-                                               @QueryParam("enabled") Boolean enabled,
-                                               @QueryParam("briefRepresentation") Boolean briefRepresentation,
-                                               @QueryParam("exact") Boolean exact,
-                                               @QueryParam("q") String searchQuery) {
+    @Operation(tags="Users", summary = "Get users Returns a stream of users, filtered according to query parameters.")
+    public Stream<UserRepresentation> getUsers(
+            @Parameter(description = "A String contained in username, first or last name, or email") @QueryParam("search") String search,
+            @Parameter(description = "A String contained in lastName, or the complete lastName, if param \"exact\" is true") @QueryParam("lastName") String last,
+            @Parameter(description = "A String contained in firstName, or the complete firstName, if param \"exact\" is true") @QueryParam("firstName") String first,
+            @Parameter(description = "A String contained in email, or the complete email, if param \"exact\" is true") @QueryParam("email") String email,
+            @Parameter(description = "A String contained in username, or the complete username, if param \"exact\" is true") @QueryParam("username") String username,
+            @Parameter(description = "whether the email has been verified") @QueryParam("emailVerified") Boolean emailVerified,
+            @Parameter(description = "The alias of an Identity Provider linked to the user") @QueryParam("idpAlias") String idpAlias,
+            @Parameter(description = "The userId at an Identity Provider linked to the user") @QueryParam("idpUserId") String idpUserId,
+            @Parameter(description = "Pagination offset") @QueryParam("first") Integer firstResult,
+            @Parameter(description = "Maximum results size (defaults to 100)") @QueryParam("max") Integer maxResults,
+            @Parameter(description = "Boolean representing if user is enabled or not") @QueryParam("enabled") Boolean enabled,
+            @Parameter(description = "Boolean which defines whether brief representations are returned (default: false)") @QueryParam("briefRepresentation") Boolean briefRepresentation,
+            @Parameter(description = "Boolean which defines whether the params \"last\", \"first\", \"email\" and \"username\" must match exactly") @QueryParam("exact") Boolean exact,
+            @Parameter(description = "A query to search for custom attributes, in the format 'key1:value2 key2:value2'") @QueryParam("q") String searchQuery) {
         UserPermissionEvaluator userPermissionEvaluator = auth.users();
 
         userPermissionEvaluator.requireQuery();
@@ -364,14 +369,21 @@ public class UsersResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    public Integer getUsersCount(@QueryParam("search") String search,
-                                 @QueryParam("lastName") String last,
-                                 @QueryParam("firstName") String first,
-                                 @QueryParam("email") String email,
-                                 @QueryParam("emailVerified") Boolean emailVerified,
-                                 @QueryParam("username") String username,
-                                 @QueryParam("enabled") Boolean enabled,
-                                 @QueryParam("q") String searchQuery) {
+    @Operation(tags = "Users",
+            summary = "Returns the number of users that match the given criteria.",
+            description = "It can be called in three different ways. " +
+                    "1. Don’t specify any criteria and pass {@code null}. The number of all users within that realm will be returned. <p> " +
+                    "2. If {@code search} is specified other criteria such as {@code last} will be ignored even though you set them. The {@code search} string will be matched against the first and last name, the username and the email of a user. <p> " +
+                    "3. If {@code search} is unspecified but any of {@code last}, {@code first}, {@code email} or {@code username} those criteria are matched against their respective fields on a user entity. Combined with a logical and.")
+    public Integer getUsersCount(
+            @Parameter(description = "arbitrary search string for all the fields below") @QueryParam("search") String search,
+            @Parameter(description = "last name filter") @QueryParam("lastName") String last,
+            @Parameter(description = "first name filter") @QueryParam("firstName") String first,
+            @Parameter(description = "email filter") @QueryParam("email") String email,
+            @QueryParam("emailVerified") Boolean emailVerified,
+            @Parameter(description = "username filter") @QueryParam("username") String username,
+            @Parameter(description = "Boolean representing if user is enabled or not") @QueryParam("enabled") Boolean enabled,
+            @QueryParam("q") String searchQuery) {
         UserPermissionEvaluator userPermissionEvaluator = auth.users();
         userPermissionEvaluator.requireQuery();
 
