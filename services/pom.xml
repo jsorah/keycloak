@@ -198,9 +198,9 @@
             <artifactId>uap-java</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-jaxrs2-jakarta</artifactId>
-            <version>2.2.10</version>
+            <groupId>org.eclipse.microprofile.openapi</groupId>
+            <artifactId>microprofile-openapi-api</artifactId>
+            <version>3.1</version>
         </dependency>
     </dependencies>
     <build>
@@ -245,25 +245,19 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>io.swagger.core.v3</groupId>
-                        <artifactId>swagger-maven-plugin-jakarta</artifactId>
-                        <version>2.2.10</version>
+                        <artifactId>smallrye-open-api-maven-plugin</artifactId>
+                        <groupId>io.smallrye</groupId>
+                        <version>3.1.2</version>
                         <configuration>
-                            <outputFileName>service</outputFileName>
-                            <outputPath>${project.build.directory}/apidocs-rest/swagger/apidocs</outputPath>
-                            <outputFormat>YAML</outputFormat>
-                            <resourceClasses>
-                                <resourceClass>org.keycloak.services.resources.admin.RealmsAdminResource</resourceClass>
-                            </resourceClasses>
-                            <prettyPrint>true</prettyPrint>
-                            <readAllResources>true</readAllResources>
-                            <openapiFilePath>${project.basedir}/src/docs/swagger/apiinfo.json</openapiFilePath>
+                            <scanProfiles>admin</scanProfiles>
+                            <outputDirectory>${project.build.directory}/apidocs-rest/swagger/apidocs</outputDirectory>
+                            <infoTitle>Keycloak Admin REST API</infoTitle>
+                            <infoDescription>This is a REST API reference for the Keycloak Admin REST API.</infoDescription>
                         </configuration>
                         <executions>
                             <execution>
-                                <phase>compile</phase>
                                 <goals>
-                                    <goal>resolve</goal>
+                                    <goal>generate-schema</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -287,7 +281,7 @@
                                         <modelTests>false</modelTests>
                                         <verbose>false</verbose>
                                     </globalProperties>
-                                    <inputSpec>${project.build.directory}/apidocs-rest/swagger/apidocs/service.yaml</inputSpec>
+                                    <inputSpec>${project.build.directory}/apidocs-rest/swagger/apidocs/openapi.yaml</inputSpec>
                                     <output>${project.basedir}/target/docs/asciidoc/</output>
                                     <generatorName>asciidoc</generatorName>
                                     <generateApiDocumentation>true</generateApiDocumentation>

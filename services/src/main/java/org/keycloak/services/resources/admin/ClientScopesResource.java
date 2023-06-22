@@ -16,7 +16,9 @@
  */
 package org.keycloak.services.resources.admin;
 
-import io.swagger.v3.oas.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.events.admin.OperationType;
@@ -29,6 +31,7 @@ import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.models.utils.RepresentationToModel;
 import org.keycloak.representations.idm.ClientScopeRepresentation;
 import org.keycloak.services.ErrorResponse;
+import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 
 import jakarta.ws.rs.Consumes;
@@ -49,6 +52,7 @@ import java.util.stream.Stream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
 public class ClientScopesResource {
     protected static final Logger logger = Logger.getLogger(ClientScopesResource.class);
     protected final RealmModel realm;
@@ -72,7 +76,8 @@ public class ClientScopesResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags = "Client Scopes", summary = "Get client scopes belonging to the realm Returns a list of client scopes belonging to the realm")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.CLIENT_SCOPES)
+    @Operation( summary = "Get client scopes belonging to the realm Returns a list of client scopes belonging to the realm")
     public Stream<ClientScopeRepresentation> getClientScopes() {
         auth.clients().requireListClientScopes();
 
@@ -92,7 +97,8 @@ public class ClientScopesResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags = "Client Scopes", summary = "Create a new client scope Client Scope’s name must be unique!")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.CLIENT_SCOPES)
+    @Operation( summary = "Create a new client scope Client Scope’s name must be unique!")
     public Response createClientScope(ClientScopeRepresentation rep) {
         auth.clients().requireManageClientScopes();
         ClientScopeResource.validateClientScopeName(rep.getName());

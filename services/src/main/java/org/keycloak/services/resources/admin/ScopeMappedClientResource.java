@@ -17,8 +17,10 @@
 
 package org.keycloak.services.resources.admin;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import jakarta.ws.rs.NotFoundException;
 import org.keycloak.events.admin.OperationType;
@@ -31,6 +33,7 @@ import org.keycloak.models.ScopeContainerModel;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 
 import jakarta.ws.rs.Consumes;
@@ -53,6 +56,7 @@ import java.util.stream.Stream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
 public class ScopeMappedClientResource {
     protected RealmModel realm;
     protected AdminPermissionEvaluator auth;
@@ -86,7 +90,8 @@ public class ScopeMappedClientResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Scope Mappings", summary = "Get the roles associated with a client's scope Returns roles for the client.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.SCOPE_MAPPINGS)
+    @Operation(summary = "Get the roles associated with a client's scope Returns roles for the client.")
     public Stream<RoleRepresentation> getClientScopeMappings() {
         viewPermission.require();
 
@@ -105,7 +110,8 @@ public class ScopeMappedClientResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Scope Mappings", summary = "The available client-level roles Returns the roles for the client that can be associated with the client's scope")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.SCOPE_MAPPINGS)
+    @Operation(summary = "The available client-level roles Returns the roles for the client that can be associated with the client's scope")
     public Stream<RoleRepresentation> getAvailableClientScopeMappings() {
         viewPermission.require();
 
@@ -128,7 +134,8 @@ public class ScopeMappedClientResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Scope Mappings", summary = "Get effective client roles Returns the roles for the client that are associated with the client's scope.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.SCOPE_MAPPINGS)
+    @Operation(summary = "Get effective client roles Returns the roles for the client that are associated with the client's scope.")
     public Stream<RoleRepresentation> getCompositeClientScopeMappings(@Parameter(description = "if false, return roles with their attributes") @QueryParam("briefRepresentation") @DefaultValue("true") boolean briefRepresentation) {
         viewPermission.require();
 
@@ -146,7 +153,8 @@ public class ScopeMappedClientResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Scope Mappings", summary = "Add client-level roles to the client's scope")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.SCOPE_MAPPINGS)
+    @Operation(summary = "Add client-level roles to the client's scope")
     public void addClientScopeMapping(List<RoleRepresentation> roles) {
         managePermission.require();
 
@@ -168,7 +176,8 @@ public class ScopeMappedClientResource {
      */
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Scope Mappings", summary = "Remove client-level roles from the client's scope.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.SCOPE_MAPPINGS)
+    @Operation(summary = "Remove client-level roles from the client's scope.")
     public void deleteClientScopeMapping(List<RoleRepresentation> roles) {
         managePermission.require();
 

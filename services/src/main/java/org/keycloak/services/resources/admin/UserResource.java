@@ -16,8 +16,10 @@
  */
 package org.keycloak.services.resources.admin;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.authentication.RequiredActionProvider;
@@ -73,6 +75,7 @@ import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.managers.BruteForceProtector;
 import org.keycloak.services.managers.UserConsentManager;
 import org.keycloak.services.managers.UserSessionManager;
+import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.LoginActionsService;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 import org.keycloak.services.validation.Validation;
@@ -127,6 +130,7 @@ import static org.keycloak.utils.LockObjectsForModification.lockUserSessionsForM
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
 public class UserResource {
     private static final Logger logger = Logger.getLogger(UserResource.class);
 
@@ -161,7 +165,8 @@ public class UserResource {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Update the user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Update the user")
     public Response updateUser(final UserRepresentation rep) {
 
         auth.users().requireManage(user);
@@ -295,7 +300,8 @@ public class UserResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Get representation of the user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Get representation of the user")
     public UserRepresentation getUser() {
         auth.users().requireView(user);
 
@@ -331,7 +337,8 @@ public class UserResource {
     @POST
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Impersonate the user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Impersonate the user")
     public Map<String, Object> impersonate() {
         ProfileHelper.requireFeature(Profile.Feature.IMPERSONATION);
 
@@ -382,7 +389,8 @@ public class UserResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Get sessions associated with the user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Get sessions associated with the user")
     public Stream<UserSessionRepresentation> getSessions() {
         auth.users().requireView(user);
         return session.sessions().getUserSessionsStream(realm, user).map(ModelToRepresentation::toRepresentation);
@@ -397,7 +405,8 @@ public class UserResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Get offline sessions associated with the user and client")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Get offline sessions associated with the user and client")
     public Stream<UserSessionRepresentation> getOfflineSessions(final @PathParam("clientUuid") String clientUuid) {
         auth.users().requireView(user);
         ClientModel client = realm.getClientById(clientUuid);
@@ -418,7 +427,8 @@ public class UserResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Get social logins associated with the user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Get social logins associated with the user")
     public Stream<FederatedIdentityRepresentation> getFederatedIdentity() {
         auth.users().requireView(user);
         return getFederatedIdentities(user);
@@ -441,7 +451,8 @@ public class UserResource {
     @Path("federated-identity/{provider}")
     @POST
     @NoCache
-    @Operation(tags="Users", summary = "Add a social login provider to the user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Add a social login provider to the user")
     public Response addFederatedIdentity(final @Parameter(description = "Social login provider id") @PathParam("provider") String provider, FederatedIdentityRepresentation rep) {
         auth.users().requireManage(user);
         if (session.users().getFederatedIdentity(realm, user, provider) != null) {
@@ -462,7 +473,8 @@ public class UserResource {
     @Path("federated-identity/{provider}")
     @DELETE
     @NoCache
-    @Operation(tags="Users", summary = "Remove a social login provider from user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Remove a social login provider from user")
     public void removeFederatedIdentity(final @Parameter(description = "Social login provider id") @PathParam("provider") String provider) {
         auth.users().requireManage(user);
         if (!session.users().removeFederatedIdentity(realm, user, provider)) {
@@ -480,7 +492,8 @@ public class UserResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Get consents granted by the user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Get consents granted by the user")
     public Stream<Map<String, Object>> getConsents() {
         auth.users().requireView(user);
 
@@ -549,7 +562,8 @@ public class UserResource {
     @Path("consents/{client}")
     @DELETE
     @NoCache
-    @Operation(tags="Users", summary = "Revoke consent and offline tokens for particular client from user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Revoke consent and offline tokens for particular client from user")
     public void revokeConsent(final @Parameter(description = "Client id") @PathParam("client") String clientId) {
         auth.users().requireManage(user);
 
@@ -573,7 +587,8 @@ public class UserResource {
      */
     @Path("logout")
     @POST
-    @Operation(tags="Users", summary = "Remove all user sessions associated with the user Also send notification to all clients that have an admin URL to invalidate the sessions for the particular user.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Remove all user sessions associated with the user Also send notification to all clients that have an admin URL to invalidate the sessions for the particular user.")
     public void logout() {
         auth.users().requireManage(user);
 
@@ -591,7 +606,8 @@ public class UserResource {
      */
     @DELETE
     @NoCache
-    @Operation(tags="Users", summary = "Delete the user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Delete the user")
     public Response deleteUser() {
         auth.users().requireManage(user);
 
@@ -619,7 +635,8 @@ public class UserResource {
     @Path("disable-credential-types")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Disable all credentials for a user of a specific type")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Disable all credentials for a user of a specific type")
     public void disableCredentialType(List<String> credentialTypes) {
         auth.users().requireManage(user);
         if (credentialTypes == null) return;
@@ -637,7 +654,8 @@ public class UserResource {
     @Path("reset-password")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Set up a new password for the user.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Set up a new password for the user.")
     public void resetPassword(@Parameter(description = "The representation must contain a rawPassword with the plain-text password") CredentialRepresentation cred) {
         auth.users().requireManage(user);
         if (cred == null || cred.getValue() == null) {
@@ -674,7 +692,8 @@ public class UserResource {
     @Path("credentials")
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation()
     public Stream<CredentialRepresentation> credentials(){
         auth.users().requireView(user);
         return user.credentialManager().getStoredCredentialsStream()
@@ -693,7 +712,8 @@ public class UserResource {
     @Path("configured-user-storage-credential-types")
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Return credential types, which are provided by the user storage where user is stored.", description = "Returned values can contain for example \"password\", \"otp\" etc. This will always return empty list for \"local\" users, which are not backed by any user storage")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Return credential types, which are provided by the user storage where user is stored.", description = "Returned values can contain for example \"password\", \"otp\" etc. This will always return empty list for \"local\" users, which are not backed by any user storage")
     public Stream<String> getConfiguredUserStorageCredentialTypes() {
         // This has "requireManage" due the compatibility with "credentials()" endpoint. Strictly said, it is reading endpoint, not writing,
         // so may be revisited if to rather use "requireView" here in the future.
@@ -709,7 +729,8 @@ public class UserResource {
     @Path("credentials/{credentialId}")
     @DELETE
     @NoCache
-    @Operation(tags="Users", summary = "Remove a credential for a user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Remove a credential for a user")
     public void removeCredential(final @PathParam("credentialId") String credentialId) {
         auth.users().requireManage(user);
         CredentialModel credential = user.credentialManager().getStoredCredentialById(credentialId);
@@ -728,7 +749,8 @@ public class UserResource {
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
     @Path("credentials/{credentialId}/userLabel")
-    @Operation(tags="Users", summary = "Update a credential label for a user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Update a credential label for a user")
     public void setCredentialUserLabel(final @PathParam("credentialId") String credentialId, String userLabel) {
         auth.users().requireManage(user);
         CredentialModel credential = user.credentialManager().getStoredCredentialById(credentialId);
@@ -746,7 +768,8 @@ public class UserResource {
      */
     @Path("credentials/{credentialId}/moveToFirst")
     @POST
-    @Operation(tags="Users", summary = "Move a credential to a first position in the credentials list of the user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Move a credential to a first position in the credentials list of the user")
     public void moveCredentialToFirst(final @Parameter(description = "The credential to move") @PathParam("credentialId") String credentialId){
         moveCredentialAfter(credentialId, null);
     }
@@ -758,7 +781,8 @@ public class UserResource {
      */
     @Path("credentials/{credentialId}/moveAfter/{newPreviousCredentialId}")
     @POST
-    @Operation(tags="Users", summary = "Move a credential to a position behind another credential")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Move a credential to a position behind another credential")
     public void moveCredentialAfter(final @Parameter(description = "The credential to move") @PathParam("credentialId") String credentialId,
                                     final @Parameter(description = "The credential that will be the previous element in the list. If set to null, the moved credential will be the first element in the list.") @PathParam("newPreviousCredentialId") String newPreviousCredentialId){
         auth.users().requireManage(user);
@@ -787,7 +811,8 @@ public class UserResource {
     @Path("reset-password-email")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users",
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation(
             summary = "Send an email to the user with a link they can click to reset their password.",
             description = "The redirectUri and clientId parameters are optional. The default for the redirect is the account client. This endpoint has been deprecated.  Please use the execute-actions-email passing a list with UPDATE_PASSWORD within it.",
             deprecated = true)
@@ -816,7 +841,8 @@ public class UserResource {
     @Path("execute-actions-email")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags = "Users",
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation(
             summary = "Send an email to the user with a link they can click to execute particular actions.",
             description = "An email contains a link the user can click to perform a set of required actions. The redirectUri and clientId parameters are optional. If no redirect is given, then there will be no link back to click after actions have completed. Redirect uri must be a valid uri for the particular clientId."
     )
@@ -907,7 +933,8 @@ public class UserResource {
     @Path("send-verify-email")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users",
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation(
     summary = "Send an email-verification email to the user An email contains a link the user can click to verify their email address.",
             description = "The redirectUri and clientId parameters are optional. The default for the redirect is the account client."
     )
@@ -923,7 +950,8 @@ public class UserResource {
     @Path("groups")
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation()
     public Stream<GroupRepresentation> groupMembership(@QueryParam("search") String search,
                                                        @QueryParam("first") Integer firstResult,
                                                        @QueryParam("max") Integer maxResults,
@@ -941,7 +969,8 @@ public class UserResource {
     @NoCache
     @Path("groups/count")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation()
     public Map<String, Long> getGroupMembershipCount(@QueryParam("search") String search) {
         auth.users().requireView(user);
         Long results;
@@ -959,7 +988,8 @@ public class UserResource {
     @DELETE
     @Path("groups/{groupId}")
     @NoCache
-    @Operation(tags="Users")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation()
     public void removeMembership(@PathParam("groupId") String groupId) {
         auth.users().requireManageGroupMembership(user);
 
@@ -984,7 +1014,8 @@ public class UserResource {
     @PUT
     @Path("groups/{groupId}")
     @NoCache
-    @Operation(tags="Users")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation()
     public void joinGroup(@PathParam("groupId") String groupId) {
         auth.users().requireManageGroupMembership(user);
         GroupModel group = session.groups().getGroupById(realm, groupId);

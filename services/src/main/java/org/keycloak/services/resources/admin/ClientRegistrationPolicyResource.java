@@ -17,7 +17,9 @@
 
 package org.keycloak.services.resources.admin;
 
-import io.swagger.v3.oas.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.events.admin.ResourceType;
 import org.keycloak.models.KeycloakSession;
@@ -28,6 +30,7 @@ import org.keycloak.provider.ProviderFactory;
 import org.keycloak.representations.idm.ComponentTypeRepresentation;
 import org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy;
 import org.keycloak.services.clientregistration.policy.ClientRegistrationPolicyFactory;
+import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 
 import jakarta.ws.rs.GET;
@@ -41,6 +44,7 @@ import java.util.stream.Stream;
  * @resource Client Registration Policy
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
  */
+@Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
 public class ClientRegistrationPolicyResource {
 
     private final AdminPermissionEvaluator auth;
@@ -67,7 +71,8 @@ public class ClientRegistrationPolicyResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Client Registration Policy", summary="Base path for retrieve providers with the configProperties properly filled")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.CLIENT_REGISTRATION_POLICY)
+    @Operation( summary="Base path for retrieve providers with the configProperties properly filled")
     public Stream<ComponentTypeRepresentation> getProviders() {
         return session.getKeycloakSessionFactory().getProviderFactoriesStream(ClientRegistrationPolicy.class)
                 .map((ProviderFactory factory) -> {

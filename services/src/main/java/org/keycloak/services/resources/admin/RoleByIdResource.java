@@ -16,8 +16,10 @@
  */
 package org.keycloak.services.resources.admin;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import jakarta.ws.rs.NotFoundException;
@@ -32,6 +34,7 @@ import org.keycloak.representations.idm.ManagementPermissionReference;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.services.ErrorResponse;
 import org.keycloak.services.ErrorResponseException;
+import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionManagement;
 import org.keycloak.services.resources.admin.permissions.AdminPermissions;
@@ -57,6 +60,7 @@ import java.util.stream.Stream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
 public class RoleByIdResource extends RoleResource {
     protected static final Logger logger = Logger.getLogger(RoleByIdResource.class);
     private final RealmModel realm;
@@ -83,7 +87,8 @@ public class RoleByIdResource extends RoleResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Roles (by ID)", summary = "Get a specific role's representation")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLES_BY_ID)
+    @Operation( summary = "Get a specific role's representation")
     public RoleRepresentation getRole(final @Parameter(description = "id of role") @PathParam("role-id") String id) {
 
         RoleModel roleModel = getRoleModel(id);
@@ -107,7 +112,8 @@ public class RoleByIdResource extends RoleResource {
     @Path("{role-id}")
     @DELETE
     @NoCache
-    @Operation(tags="Roles (by ID)", summary = "Delete the role")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLES_BY_ID)
+    @Operation( summary = "Delete the role")
     public void deleteRole(final @Parameter(description = "id of role") @PathParam("role-id") String id) {
         if (realm.getDefaultRole() == null) {
             logger.warnf("Default role for realm with id '%s' doesn't exist.", realm.getId());
@@ -138,7 +144,8 @@ public class RoleByIdResource extends RoleResource {
     @Path("{role-id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Roles (by ID)", summary = "Update the role")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLES_BY_ID)
+    @Operation( summary = "Update the role")
     public void updateRole(final @Parameter(description = "id of role") @PathParam("role-id") String id, final RoleRepresentation rep) {
         RoleModel role = getRoleModel(id);
         auth.roles().requireManage(role);
@@ -162,7 +169,8 @@ public class RoleByIdResource extends RoleResource {
     @Path("{role-id}/composites")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Roles (by ID)", summary = "Make the role a composite role by associating some child roles")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLES_BY_ID)
+    @Operation( summary = "Make the role a composite role by associating some child roles")
     public void addComposites(final @PathParam("role-id") String id, List<RoleRepresentation> roles) {
         RoleModel role = getRoleModel(id);
         auth.roles().requireManage(role);
@@ -181,7 +189,8 @@ public class RoleByIdResource extends RoleResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Roles (by ID)", summary = "Get role's children Returns a set of role's children provided the role is a composite.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLES_BY_ID)
+    @Operation( summary = "Get role's children Returns a set of role's children provided the role is a composite.")
     public Stream<RoleRepresentation> getRoleComposites(final @PathParam("role-id") String id,
                                                         final @QueryParam("search") String search,
                                                         final @QueryParam("first") Integer first,
@@ -209,7 +218,8 @@ public class RoleByIdResource extends RoleResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Roles (by ID)", summary = "Get realm-level roles that are in the role's composite")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLES_BY_ID)
+    @Operation( summary = "Get realm-level roles that are in the role's composite")
     public Stream<RoleRepresentation> getRealmRoleComposites(final @PathParam("role-id") String id) {
         RoleModel role = getRoleModel(id);
         auth.roles().requireView(role);
@@ -227,7 +237,8 @@ public class RoleByIdResource extends RoleResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Roles (by ID)", summary = "Get client-level roles for the client that are in the role's composite")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLES_BY_ID)
+    @Operation( summary = "Get client-level roles for the client that are in the role's composite")
     public Stream<RoleRepresentation> getClientRoleComposites(final @PathParam("role-id") String id,
                                                                 final @PathParam("clientUuid") String clientUuid) {
 
@@ -249,7 +260,8 @@ public class RoleByIdResource extends RoleResource {
     @Path("{role-id}/composites")
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Roles (by ID)", summary = "Remove a set of roles from the role's composite")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLES_BY_ID)
+    @Operation( summary = "Remove a set of roles from the role's composite")
     public void deleteComposites(final @Parameter(description = "Role id") @PathParam("role-id") String id,
                                  @Parameter(description = "A set of roles to be removed") List<RoleRepresentation> roles) {
         RoleModel role = getRoleModel(id);
@@ -268,7 +280,8 @@ public class RoleByIdResource extends RoleResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Roles (by ID)", summary = "Return object stating whether role Authorization permissions have been initialized or not and a reference")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLES_BY_ID)
+    @Operation( summary = "Return object stating whether role Authorization permissions have been initialized or not and a reference")
     public ManagementPermissionReference getManagementPermissions(final @PathParam("role-id") String id) {
         RoleModel role = getRoleModel(id);
         auth.roles().requireView(role);
@@ -300,7 +313,8 @@ public class RoleByIdResource extends RoleResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Roles (by ID)", summary = "Return object stating whether role Authorization permissions have been initialized or not and a reference")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLES_BY_ID)
+    @Operation( summary = "Return object stating whether role Authorization permissions have been initialized or not and a reference")
     public ManagementPermissionReference setManagementPermissionsEnabled(final @PathParam("role-id") String id, ManagementPermissionReference ref) {
         RoleModel role = getRoleModel(id);
         auth.roles().requireManage(role);

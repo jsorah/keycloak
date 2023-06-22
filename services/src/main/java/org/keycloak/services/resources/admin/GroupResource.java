@@ -16,8 +16,10 @@
  */
 package org.keycloak.services.resources.admin;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import jakarta.ws.rs.NotFoundException;
 import org.keycloak.common.util.ObjectUtil;
@@ -34,6 +36,7 @@ import org.keycloak.representations.idm.ManagementPermissionReference;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.services.ErrorResponse;
 import org.keycloak.services.Urls;
+import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionManagement;
 import org.keycloak.services.resources.admin.permissions.AdminPermissions;
@@ -60,6 +63,7 @@ import java.util.stream.Stream;
  * @resource Groups
  * @author Bill Burke
  */
+@Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
 public class GroupResource {
 
     private final RealmModel realm;
@@ -84,7 +88,8 @@ public class GroupResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Groups")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.GROUPS)
+    @Operation()
     public GroupRepresentation getGroup() {
         this.auth.groups().requireView(group);
 
@@ -102,7 +107,8 @@ public class GroupResource {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Groups", summary = "Update group, ignores subgroups.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.GROUPS)
+    @Operation( summary = "Update group, ignores subgroups.")
     public Response updateGroup(GroupRepresentation rep) {
         this.auth.groups().requireManage(group);
 
@@ -134,7 +140,8 @@ public class GroupResource {
     }
 
     @DELETE
-    @Operation(tags="Groups")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.GROUPS)
+    @Operation()
     public void deleteGroup() {
         this.auth.groups().requireManage(group);
 
@@ -154,7 +161,8 @@ public class GroupResource {
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Groups", summary = "Set or create child.", description = "This will just set the parent if it exists. Create it and set the parent if the group doesn’t exist.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.GROUPS)
+    @Operation( summary = "Set or create child.", description = "This will just set the parent if it exists. Create it and set the parent if the group doesn’t exist.")
     public Response addChild(GroupRepresentation rep) {
         this.auth.groups().requireManage(group);
 
@@ -271,7 +279,8 @@ public class GroupResource {
     @NoCache
     @Path("members")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Groups", summary = "Get users Returns a stream of users, filtered according to query parameters")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.GROUPS)
+    @Operation( summary = "Get users Returns a stream of users, filtered according to query parameters")
     public Stream<UserRepresentation> getMembers(@Parameter(description = "Pagination offset") @QueryParam("first") Integer firstResult,
                                                  @Parameter(description = "Maximum results size (defaults to 100)") @QueryParam("max") Integer maxResults,
                                                  @Parameter(description = "Only return basic information (only guaranteed to return id, username, created, first and last name, email, enabled state, email verification state, federation link, and access. Note that it means that namely user attributes, required actions, and not before are not returned.)")
@@ -297,7 +306,8 @@ public class GroupResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Groups", summary = "Return object stating whether client Authorization permissions have been initialized or not and a reference")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.GROUPS)
+    @Operation( summary = "Return object stating whether client Authorization permissions have been initialized or not and a reference")
     public ManagementPermissionReference getManagementPermissions() {
         auth.groups().requireView(group);
 
@@ -328,7 +338,8 @@ public class GroupResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Groups", summary = "Return object stating whether client Authorization permissions have been initialized or not and a reference")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.GROUPS)
+    @Operation( summary = "Return object stating whether client Authorization permissions have been initialized or not and a reference")
     public ManagementPermissionReference setManagementPermissionsEnabled(ManagementPermissionReference ref) {
         auth.groups().requireManage(group);
         AdminPermissionManagement permissions = AdminPermissions.management(session, realm);

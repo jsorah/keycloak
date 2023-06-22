@@ -16,8 +16,10 @@
  */
 package org.keycloak.services.resources.admin;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 
@@ -37,6 +39,7 @@ import org.keycloak.representations.idm.ClientMappingsRepresentation;
 import org.keycloak.representations.idm.MappingsRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.services.ErrorResponseException;
+import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 import org.keycloak.storage.ReadOnlyException;
 
@@ -70,6 +73,7 @@ import java.util.stream.Stream;
  * @author <a href="mailto:mpaulosnunes@gmail.com">Miguel P. Nunes</a>
  * @version $Revision: 1 $
  */
+@Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
 public class RoleMapperResource {
 
     protected static final Logger logger = Logger.getLogger(RoleMapperResource.class);
@@ -116,7 +120,8 @@ public class RoleMapperResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Role Mapper", summary = "Get role mappings")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLE_MAPPER)
+    @Operation( summary = "Get role mappings")
     public MappingsRepresentation getRoleMappings() {
         viewPermission.require();
 
@@ -159,7 +164,8 @@ public class RoleMapperResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Role Mapper", summary = "Get realm-level role mappings")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLE_MAPPER)
+    @Operation( summary = "Get realm-level role mappings")
     public Stream<RoleRepresentation> getRealmRoleMappings() {
         viewPermission.require();
 
@@ -179,7 +185,8 @@ public class RoleMapperResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Role Mapper", summary = "Get effective realm-level role mappings This will recurse all composite roles to get the result.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLE_MAPPER)
+    @Operation( summary = "Get effective realm-level role mappings This will recurse all composite roles to get the result.")
     public Stream<RoleRepresentation> getCompositeRealmRoleMappings(@Parameter(description = "if false, return roles with their attributes") @QueryParam("briefRepresentation") @DefaultValue("true") boolean briefRepresentation) {
         viewPermission.require();
 
@@ -199,7 +206,8 @@ public class RoleMapperResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Role Mapper", summary = "Get realm-level roles that can be mapped")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLE_MAPPER)
+    @Operation( summary = "Get realm-level roles that can be mapped")
     public Stream<RoleRepresentation> getAvailableRealmRoleMappings() {
         viewPermission.require();
 
@@ -217,7 +225,8 @@ public class RoleMapperResource {
     @Path("realm")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Role Mapper", summary = "Add realm-level role mappings to the user")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLE_MAPPER)
+    @Operation( summary = "Add realm-level role mappings to the user")
     public void addRealmRoleMappings(@Parameter(description = "Roles to add") List<RoleRepresentation> roles) {
         managePermission.require();
 
@@ -248,7 +257,8 @@ public class RoleMapperResource {
     @Path("realm")
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Role Mapper", summary = "Delete realm-level role mappings")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.ROLE_MAPPER)
+    @Operation( summary = "Delete realm-level role mappings")
     public void deleteRealmRoleMappings(List<RoleRepresentation> roles) {
         managePermission.require();
 

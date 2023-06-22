@@ -17,7 +17,9 @@
 
 package org.keycloak.services.resources.admin;
 
-import io.swagger.v3.oas.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.keycloak.http.HttpResponse;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.events.admin.ResourceType;
@@ -27,6 +29,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.representations.idm.ClientInitialAccessCreatePresentation;
 import org.keycloak.representations.idm.ClientInitialAccessPresentation;
 import org.keycloak.services.clientregistration.ClientRegistrationTokenUtils;
+import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 
 import jakarta.ws.rs.Consumes;
@@ -45,6 +48,7 @@ import java.util.stream.Stream;
  * @resource Client Initial Access
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
+@Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
 public class ClientInitialAccessResource {
 
     private final AdminPermissionEvaluator auth;
@@ -70,7 +74,8 @@ public class ClientInitialAccessResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Client Initial Access", summary = "Create a new initial access token.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.CLIENT_INITIAL_ACCESS)
+    @Operation( summary = "Create a new initial access token.")
     public ClientInitialAccessPresentation create(ClientInitialAccessCreatePresentation config) {
         auth.clients().requireManage();
 
@@ -96,7 +101,8 @@ public class ClientInitialAccessResource {
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Client Initial Access")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.CLIENT_INITIAL_ACCESS)
+    @Operation()
     public Stream<ClientInitialAccessPresentation> list() {
         auth.clients().requireView();
 
@@ -105,7 +111,8 @@ public class ClientInitialAccessResource {
 
     @DELETE
     @Path("{id}")
-    @Operation(tags="Client Initial Access")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.CLIENT_INITIAL_ACCESS)
+    @Operation()
     public void delete(final @PathParam("id") String id) {
         auth.clients().requireManage();
 

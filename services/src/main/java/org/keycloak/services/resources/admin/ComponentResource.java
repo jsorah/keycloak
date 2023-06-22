@@ -16,7 +16,9 @@
  */
 package org.keycloak.services.resources.admin;
 
-import io.swagger.v3.oas.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import jakarta.ws.rs.NotFoundException;
@@ -40,6 +42,7 @@ import org.keycloak.representations.idm.ComponentRepresentation;
 import org.keycloak.representations.idm.ComponentTypeRepresentation;
 import org.keycloak.representations.idm.ConfigPropertyRepresentation;
 import org.keycloak.services.ErrorResponse;
+import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 import org.keycloak.utils.LockObjectsForModification;
 
@@ -69,6 +72,7 @@ import java.util.stream.Stream;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
 public class ComponentResource {
     protected static final Logger logger = Logger.getLogger(ComponentResource.class);
 
@@ -96,7 +100,8 @@ public class ComponentResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Component")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.COMPONENT)
+    @Operation()
     public Stream<ComponentRepresentation> getComponents(@QueryParam("parent") String parent,
                                                        @QueryParam("type") String type,
                                                        @QueryParam("name") String name) {
@@ -127,7 +132,8 @@ public class ComponentResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Component")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.COMPONENT)
+    @Operation()
     public Response create(ComponentRepresentation rep) {
         auth.realm().requireManageRealm();
         return KeycloakModelUtils.runJobInRetriableTransaction(session.getKeycloakSessionFactory(), kcSession -> {
@@ -152,7 +158,8 @@ public class ComponentResource {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Component")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.COMPONENT)
+    @Operation()
     public ComponentRepresentation getComponent(@PathParam("id") String id) {
         auth.realm().requireViewRealm();
         ComponentModel model = realm.getComponent(id);
@@ -166,7 +173,8 @@ public class ComponentResource {
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Component")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.COMPONENT)
+    @Operation()
     public Response updateComponent(@PathParam("id") String id, ComponentRepresentation rep) {
         auth.realm().requireManageRealm();
         return KeycloakModelUtils.runJobInRetriableTransaction(session.getKeycloakSessionFactory(), kcSession -> {
@@ -189,7 +197,8 @@ public class ComponentResource {
     }
     @DELETE
     @Path("{id}")
-    @Operation(tags="Component")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.COMPONENT)
+    @Operation()
     public void removeComponent(@PathParam("id") String id) {
         auth.realm().requireManageRealm();
         KeycloakModelUtils.runJobInRetriableTransaction(session.getKeycloakSessionFactory(), kcSession -> {
@@ -234,7 +243,8 @@ public class ComponentResource {
     @Path("{id}/sub-component-types")
     @Produces(MediaType.APPLICATION_JSON)
     @NoCache
-    @Operation(tags="Component", summary = "List of subcomponent types that are available to configure for a particular parent component.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.COMPONENT)
+    @Operation( summary = "List of subcomponent types that are available to configure for a particular parent component.")
     public Stream<ComponentTypeRepresentation> getSubcomponentConfig(@PathParam("id") String parentId, @QueryParam("type") String subtype) {
         auth.realm().requireViewRealm();
         ComponentModel parent = realm.getComponent(parentId);

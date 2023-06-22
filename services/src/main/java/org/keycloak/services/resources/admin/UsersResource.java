@@ -16,8 +16,10 @@
  */
 package org.keycloak.services.resources.admin;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.common.ClientConnection;
@@ -39,6 +41,7 @@ import org.keycloak.policy.PasswordPolicyNotMetException;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.services.ErrorResponse;
 import org.keycloak.services.ForbiddenException;
+import org.keycloak.services.resources.KeycloakOpenAPI;
 import org.keycloak.services.resources.admin.permissions.AdminPermissionEvaluator;
 import org.keycloak.services.resources.admin.permissions.UserPermissionEvaluator;
 import org.keycloak.userprofile.UserProfile;
@@ -76,6 +79,7 @@ import static org.keycloak.userprofile.UserProfileContext.USER_API;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
+@Extension(name = KeycloakOpenAPI.Profiles.ADMIN, value = "")
 public class UsersResource {
 
     private static final Logger logger = Logger.getLogger(UsersResource.class);
@@ -112,7 +116,8 @@ public class UsersResource {
      */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Create a new user Username must be unique.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Create a new user Username must be unique.")
     public Response createUser(final UserRepresentation rep) {
         // first check if user has manage rights
         try {
@@ -255,7 +260,8 @@ public class UsersResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags="Users", summary = "Get users Returns a stream of users, filtered according to query parameters.")
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation( summary = "Get users Returns a stream of users, filtered according to query parameters.")
     public Stream<UserRepresentation> getUsers(
             @Parameter(description = "A String contained in username, first or last name, or email") @QueryParam("search") String search,
             @Parameter(description = "A String contained in lastName, or the complete lastName, if param \"exact\" is true") @QueryParam("lastName") String last,
@@ -369,7 +375,8 @@ public class UsersResource {
     @GET
     @NoCache
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags = "Users",
+    @Tag(name = KeycloakOpenAPI.Admin.Tags.USERS)
+    @Operation(
             summary = "Returns the number of users that match the given criteria.",
             description = "It can be called in three different ways. " +
                     "1. Don’t specify any criteria and pass {@code null}. The number of all users within that realm will be returned. <p> " +
