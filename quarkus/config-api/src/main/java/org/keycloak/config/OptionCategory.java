@@ -12,6 +12,7 @@ public enum OptionCategory {
     HEALTH("Health", 70, ConfigSupportLevel.SUPPORTED),
     CONFIG("Config", 75, ConfigSupportLevel.SUPPORTED),
     METRICS("Metrics", 80, ConfigSupportLevel.SUPPORTED),
+    OPENAPI("OpenAPI", 85, ConfigSupportLevel.PREVIEW),
     PROXY("Proxy", 90, ConfigSupportLevel.SUPPORTED),
     VAULT("Vault", 100, ConfigSupportLevel.SUPPORTED),
     LOGGING("Logging", 110, ConfigSupportLevel.SUPPORTED),

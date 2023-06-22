@@ -32,7 +32,9 @@ class KeycloakPathConfigurationTest {
                 .addAsResource("keycloak.conf", "META-INF/keycloak.conf"))
             .overrideConfigKey("kc.http-relative-path","/auth")
             .overrideConfigKey("quarkus.http.non-application-root-path", "/q")
-            .overrideConfigKey("quarkus.micrometer.export.prometheus.path", "/prom/metrics");
+            .overrideConfigKey("quarkus.micrometer.export.prometheus.path", "/prom/metrics")
+            .overrideConfigKey("quarkus.smallrye-openapi.path", "/api/spec")
+            .overrideConfigKey("quarkus.swagger-ui.path", "/api/docs");
 
 
     @Test
@@ -108,6 +110,38 @@ class KeycloakPathConfigurationTest {
                 .when().get("")
                 .then()
                 // application root is configured to /auth, so we expect 404 on /
+                .statusCode(404);
+    }
+
+    @Test
+    void testOpenapiPathIsAvailableAtCustomLocation() {
+        given().basePath("/")
+                .when().get("api/spec")
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    void testSwaggerPathIsAvailableAtCustomLocation() {
+        given().basePath("/")
+                .when().get("api/docs/")
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    void testSwaggerPathIsNotAvailableAtDefaultLocation() {
+        given().basePath("/")
+                .when().get("swagger-ui")
+                .then()
+                .statusCode(404);
+    }
+
+    @Test
+    void testOpenapiPathIsNotAvailableAtDefaultLocation() {
+        given().basePath("/")
+                .when().get("openapi")
+                .then()
                 .statusCode(404);
     }
 }
