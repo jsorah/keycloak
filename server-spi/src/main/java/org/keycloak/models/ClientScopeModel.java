@@ -68,6 +68,7 @@ public interface ClientScopeModel extends ProtocolMapperContainerModel, ScopeCon
     String CONSENT_SCREEN_TEXT = "consent.screen.text";
     String GUI_ORDER = "gui.order";
     String INCLUDE_IN_TOKEN_SCOPE = "include.in.token.scope";
+    String INCLUDE_IN_OIDC_WELL_KNOWN_ENDPOINT = "include.in.oidc.well.known.endpoint";
     String IS_DYNAMIC_SCOPE = "is.dynamic.scope";
     String DYNAMIC_SCOPE_REGEXP = "dynamic.scope.regexp";
 
@@ -109,6 +110,15 @@ public interface ClientScopeModel extends ProtocolMapperContainerModel, ScopeCon
 
     default void setIncludeInTokenScope(boolean includeInTokenScope) {
         setAttribute(INCLUDE_IN_TOKEN_SCOPE, String.valueOf(includeInTokenScope));
+    }
+
+    default boolean isIncludeInOIDCWellKnownEndpoint() {
+        String includeInOIDCWellKnownEndpoint = getAttribute(INCLUDE_IN_OIDC_WELL_KNOWN_ENDPOINT);
+        return includeInOIDCWellKnownEndpoint == null || Boolean.parseBoolean(includeInOIDCWellKnownEndpoint);
+    }
+
+    default void setIncludeInOIDCWellknownEndpoint(boolean includeInOIDCWellknownEndpoint) {
+        setAttribute(INCLUDE_IN_OIDC_WELL_KNOWN_ENDPOINT, String.valueOf(includeInOIDCWellknownEndpoint));
     }
 
     default boolean isDynamicScope() {

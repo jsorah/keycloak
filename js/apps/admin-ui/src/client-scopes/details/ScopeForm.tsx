@@ -311,6 +311,34 @@ export const ScopeForm = ({ clientScope, save }: ScopeFormProps) => {
         />
       </FormGroup>
       <FormGroup
+          hasNoPaddingTop
+          label={t("includeInWellKnownEndpoint")}
+          labelIcon={
+            <HelpItem
+                helpText={t("includeInWellKnownEndpointHelp")}
+                fieldLabelId="includeInWellKnownEndpoint"
+            />
+          }
+          fieldId="kc-include-in-well-known-endpoint"
+      >
+        <Controller
+            name={convertAttributeNameToForm<ClientScopeDefaultOptionalType>(
+                "attributes.include.in.oidc.well.known.endpoint",
+            )}
+            control={control}
+            defaultValue="true"
+            render={({field}) => (
+                <Switch
+                    id="kc-include-in-well-known-endpoint"
+                    label={t("on")}
+                    labelOff={t("off")}
+                    isChecked={field.value === "true"}
+              onChange={(value) => field.onChange(value.toString())}
+                />
+          )}
+        />
+      </FormGroup>
+      <FormGroup
         label={t("guiOrder")}
         labelIcon={
           <HelpItem helpText={t("guiOrderHelp")} fieldLabelId="guiOrder" />
